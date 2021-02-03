@@ -1,45 +1,45 @@
 {
-  "name": "node-comfoairq",
-  "version": "0.5.5",
-  "description": "NodeJS Zehnder ComfoAirQ implementation",
-  "main": "lib/comfoconnect.js",
-  "keywords": [
-    "zehnder",
-    "comfoair",
-    "comfoairQ",
-    "bridge",
-    "protocol",
-    "api"
-  ],
-  "engines": {
-    "node": ">=0.10"
-  },
-  "author": "Jan Van Belle",
-  "license": "GPL-3.0-or-later",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/herrJones/node-comfoairq.git"
-  },
-  "dependencies": {
-    "events": "^3.1.0",
-    "net": "^1.0.2",
-    "pbf": "^3.2.1",
-    "protobufjs": "^6.10.2",
-    "safe-buffer": "^5.2.1"
-  },
-  "devDependencies": {
-    "eslint": "^7.19.0"
-  },
-  "bugs": {
-    "url": "https://github.com/herrJones/node-comfoairq/issues"
-  },
-  "homepage": "https://github.com/herrJones/node-comfoairq#readme",
-  "directories": {
-    "lib": "lib",
-    "test": "test"
-  },
-  "scripts": {
-    "test": "test/comfoTest.js",
-    "lint": "eslint"
-  }
+    "name": "node-comfoairq",
+    "version": "0.5.5",
+    "description": "NodeJS Zehnder ComfoAirQ implementation",
+    "main": "lib/comfoconnect.js",
+    "keywords": [
+        "zehnder",
+        "comfoair",
+        "comfoairQ",
+        "bridge",
+        "protocol",
+        "api"
+    ],
+    "engines": {
+        "node": ">=0.10"
+    },
+    "author": "Jan Van Belle",
+    "license": "GPL-3.0-or-later",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/herrJones/node-comfoairq.git"
+    },
+    "dependencies": {
+        "events": "^3.1.0",
+        "net": "^1.0.2",
+        "pbf": "^3.2.1",
+        "protobufjs": "^6.10.2",
+        "safe-buffer": "^5.2.1"
+    },
+    "devDependencies": {
+        "eslint": "^7.19.0"
+    },
+    "bugs": {
+        "url": "https://github.com/herrJones/node-comfoairq/issues"
+    },
+    "homepage": "https://github.com/herrJones/node-comfoairq#readme",
+    "directories": {
+        "lib": "lib",
+        "test": "test"
+    },
+    "scripts": {
+        "test": "node test/comfoTest.js",
+        "lint": "eslint"
+    }
 }

@@ -5,6 +5,7 @@ Library to control a Zehnder Comfoair Q series of ventilation devices
 A Zehnder ComfoConnect LAN C interface is required to make this work
 
 Development of this node.js plugin is heavily inspired on the work performed by:
+
 * Michael Arnauts (https://github.com/michaelarnauts/comfoconnect)
 * Marco Hoyer (https://github.com/marco-hoyer/zcan) and its forks on github (djwlindenaar, decontamin4t0R)
 
