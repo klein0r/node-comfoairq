@@ -189,5 +189,3 @@ trmnl.on('close', function() {
     console.log('\nBYE BYE !!!');
     process.exit(0);
 });
-
-zehnder.discover();
