@@ -120,7 +120,7 @@ const waitForCommand = function() {
       console.log('connect to ComfoAir unit\n');
 
       try {
-        let result = await zehnder.StartSession(true);
+        const result = await zehnder.StartSession(true);
         console.log(JSON.stringify(result));
         connected = true;
         /*
@@ -175,7 +175,7 @@ const waitForCommand = function() {
 
       const result = await zehnder.TimeRequest();
       console.log(JSON.stringify(result));
-     
+
     } else if (answer == 'disc') {
       console.log('disconnect from ComfoAir unit\n');
 
