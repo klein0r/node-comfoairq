@@ -46,23 +46,11 @@ async function restartSession() {
         const result = await zehnder.StartSession(false);
         console.log(JSON.stringify(result));
 
-        if (result[0].error != 'OK') {
+        if (result && result[0].error != 'OK') {
             throw new Error(result[0].error);
         }
         connected = true;
-        /*
-    result = await zehnder.RegisterSensor(227); // SENSOR_BYPASS_STATE
-    console.log(JSON.stringify(result));
 
-    result = await zehnder.RegisterSensor(221); // SENSOR_TEMPERATURE_SUPPLY
-    console.log(JSON.stringify(result));
-    result = await zehnder.RegisterSensor(274); // SENSOR_TEMPERATURE_EXTRACT
-    console.log(JSON.stringify(result));
-    result = await zehnder.RegisterSensor(275); // SENSOR_TEMPERATURE_EXHAUST
-    console.log(JSON.stringify(result));
-    result = await zehnder.RegisterSensor(276); // SENSOR_TEMPERATURE_OUTDOOR
-    console.log(JSON.stringify(result));
-*/
         setTimeout(keepAlive, 5000);
     } catch (exc) {
         console.log(exc);
