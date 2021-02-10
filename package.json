@@ -14,7 +14,9 @@
     "engines": {
         "node": ">=0.10"
     },
-    "author": "Jan Van Belle",
+    "author": {
+        "name": "Jan Van Belle"
+    },
     "license": "GPL-3.0-or-later",
     "repository": {
         "type": "git",
