@@ -1,25 +1,20 @@
 # node-comfoairq
 
-Library to control a Zehnder Comfoair Q series of ventilation devices
+**This is a fork with a lot of changes - check original repo by herrJones**
 
-A Zehnder ComfoConnect LAN C interface is required to make this work
+[Changes since fork](https://github.com/klein0r/node-comfoairq/compare/c1655c659f66bf5a452f9df83a95c08c659ee5ed...master)
+
+Library to control a Zehnder Comfoair Q series of ventilation devices (e.g. Q350)
+
+A *Zehnder ComfoConnect LAN C* interface is required to make this work
 
 Development of this node.js plugin is heavily inspired on the work performed by:
 
+* Jan Van Belle (https://github.com/herrJones/node-comfoairq)
 * Michael Arnauts (https://github.com/michaelarnauts/comfoconnect)
 * Marco Hoyer (https://github.com/marco-hoyer/zcan) and its forks on github (djwlindenaar, decontamin4t0R)
 
 An API is provided to connect and read sensor data from the ComfoAirQ-unit
-
-Revision history:
-
-* 0.5.0 : first working version
-* 0.5.1 : general bugfixes
-* 0.5.2 : better handling of (forced) disconnects
-* 0.5.3 : complete dependencies in package.json
-* 0.5.4 : fix bug with registering devices
-* 0.5.5 : extra commands to send to the comfoconnect device
-          get time added
 
 ## Test Script
 
