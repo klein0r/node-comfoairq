@@ -1,12 +1,12 @@
 {
-    "name": "node-comfoairq",
-    "version": "0.5.5",
+    "name": "comfoairq",
+    "version": "0.6.0",
     "description": "NodeJS Zehnder ComfoAirQ implementation",
     "main": "lib/comfoconnect.js",
     "keywords": [
         "zehnder",
         "comfoair",
-        "comfoairQ",
+        "comfoairq",
         "bridge",
         "protocol",
         "api"
@@ -18,7 +18,7 @@
     "license": "GPL-3.0-or-later",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/herrJones/node-comfoairq.git"
+        "url": "git+https://github.com/klein0r/node-comfoairq.git"
     },
     "dependencies": {
         "events": "^3.1.0",
@@ -31,9 +31,9 @@
         "eslint": "^7.19.0"
     },
     "bugs": {
-        "url": "https://github.com/herrJones/node-comfoairq/issues"
+        "url": "https://github.com/klein0r/node-comfoairq/issues"
     },
-    "homepage": "https://github.com/herrJones/node-comfoairq#readme",
+    "homepage": "https://github.com/klein0r/node-comfoairq#readme",
     "directories": {
         "lib": "lib",
         "test": "test"
