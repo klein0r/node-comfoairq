@@ -6,15 +6,10 @@
 
 Library to control a Zehnder Comfoair Q series of ventilation devices (e.g. Q350)
 
-A *Zehnder ComfoConnect LAN C* interface is required to make this work
+## Requirements
 
-Development of this node.js plugin is heavily inspired on the work performed by:
-
-* Jan Van Belle (https://github.com/herrJones/node-comfoairq)
-* Michael Arnauts (https://github.com/michaelarnauts/comfoconnect)
-* Marco Hoyer (https://github.com/marco-hoyer/zcan) and its forks on github (djwlindenaar, decontamin4t0R)
-
-An API is provided to connect and read sensor data from the ComfoAirQ-unit
+1. *Zehnder Comfoair Q* series of ventilation device (e.g. Q350)
+2. *Zehnder ComfoConnect LAN C* interface
 
 ## Test Script
 
@@ -78,3 +73,11 @@ await zehnder.StartSession(true);
 await zehnder.CloseSession();
 
 ```
+
+## Credits
+
+Development of this node.js plugin is heavily inspired on the work performed by:
+
+* Jan Van Belle (https://github.com/herrJones/node-comfoairq)
+* Michael Arnauts (https://github.com/michaelarnauts/comfoconnect)
+* Marco Hoyer (https://github.com/marco-hoyer/zcan) and its forks on github (djwlindenaar, decontamin4t0R)
