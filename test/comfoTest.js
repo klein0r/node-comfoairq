@@ -77,7 +77,7 @@ const waitForCommand = function() {
         } else if (answer == 'srch') {
             console.log('running discovery\n');
 
-            const result = await zehnder.discover();
+            const result = await zehnder.discover('172.16.255.255');
             console.log(JSON.stringify(result));
         } else if (answer == 'lapp') {
             console.log('list registered apps\n');

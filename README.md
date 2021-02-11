@@ -43,8 +43,6 @@ All functions return Promises
 
 On 'received' and 'disconnect' events are provided
 
-If a valid UUID is provided for the comfoconnect device, a discovery operation is no longer needed
-
 ## Quick-start
 
 ```javascript
@@ -65,7 +63,7 @@ zehnder.on('disconnect', (reason) => {
   connected = false;
 });
 
-zehnder.discover();
+zehnder.discover('172.16.255.255');
 
 await zehnder.StartSession(true);
 // ..... do something ......
