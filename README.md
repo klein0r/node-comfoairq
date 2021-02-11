@@ -63,7 +63,8 @@ zehnder.on('disconnect', (reason) => {
   connected = false;
 });
 
-zehnder.discover('172.16.255.255');
+const deviceInfo = await zehnder.discover('172.16.255.255');
+
 
 await zehnder.StartSession(true);
 // ..... do something ......
