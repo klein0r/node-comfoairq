@@ -17,6 +17,12 @@
     "author": {
         "name": "Jan Van Belle"
     },
+    "contributors": [
+        {
+            "name": "Matthias Kleine",
+            "email": "info@haus-automatisierung.com"
+        }
+    ],
     "license": "GPL-3.0-or-later",
     "repository": {
         "type": "git",
