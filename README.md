@@ -70,7 +70,6 @@ await zehnder.StartSession(true);
 // ..... do something ......
 // -> find some inspiration in test\comfoTest.js
 await zehnder.CloseSession();
-
 ```
 
 ## Credits
