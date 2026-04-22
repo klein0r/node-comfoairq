@@ -32,11 +32,11 @@
         "events": "^3.3.0",
         "net": "^1.0.2",
         "pbf": "^4.0.1",
-        "protobufjs": "^7.4.0",
+        "protobufjs": "^8.0.1",
         "safe-buffer": "^5.2.1"
     },
     "devDependencies": {
-        "eslint": "^9.24.0"
+        "eslint": "^10.2.1"
     },
     "bugs": {
         "url": "https://github.com/klein0r/node-comfoairq/issues"
