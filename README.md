@@ -155,9 +155,13 @@ Notes:
 
 ### Release
 
-```
+```bash
 docker build -t comfoairq-test .
-docker run --rm -it -v "$PWD":/app comfoairq-test npm version minor
+docker run --rm -it \
+  -v "$PWD":/app \
+  -v ~/.gitconfig:/root/.gitconfig:ro \
+  comfoairq-test npm version minor
+
 git push --follow-tags
 ```
 
