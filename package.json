@@ -1,6 +1,6 @@
 {
     "name": "comfoairq",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Zehnder ComfoAirQ implementation",
     "main": "lib/comfoconnect.js",
     "files": [
