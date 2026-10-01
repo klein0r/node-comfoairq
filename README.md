@@ -60,9 +60,9 @@ Only these are provided:
 * deregister app
 * away mode / boost with custom duration (`SetAway`, `SetBoost`)
 * read schedule entries (`GetScheduleEntry`, `ListScheduleEntries`)
-* read / write properties (`GetProperty`, `SetProperty`) - see `comfoProperties` in [lib/const.js](lib/const.js)
+* read / write properties (`GetProperty`, `GetPropertyRange`, `SetProperty`) - see `comfoProperties` in [lib/const.js](lib/const.js)
 
-All functions return Promises. `SetAway`, `SetBoost`, `GetScheduleEntry`, `ListScheduleEntries`, `GetProperty` and `SetProperty` resolve with the device response.
+All functions return Promises. `SetAway`, `SetBoost`, `GetScheduleEntry`, `ListScheduleEntries`, `GetProperty`, `GetPropertyRange` and `SetProperty` resolve with the device response.
 
 ```javascript
 await zehnder.SetAway(1, new Date('2026-10-02T11:30:00'));  // away until end time (or seconds, -1 = unlimited)
@@ -72,6 +72,7 @@ await zehnder.SetBoost(1, 45 * 60);                           // boost for 45 mi
 
 await zehnder.GetProperty(1, 'FILTER_LIFETIME');              // -> 180 (days)
 await zehnder.SetProperty(1, 'FILTER_LIFETIME', 170);
+await zehnder.GetPropertyRange(1, 'RMOT_COOLING_LIMIT');       // -> { value: 20, min: 15, max: 40, step: 1 }
 await zehnder.GetProperty(1, 'MODEL_NAME');                   // -> 'ComfoAir Q350 D TR'
 
 await zehnder.ListScheduleEntries(1, 0x01);                   // -> [{ type: 1, active: true, duration: null, remaining: null, value: 3 }, ...]
@@ -110,6 +111,31 @@ await zehnder.StartSession(true);
 // -> find some inspiration in test\comfoTest.js
 await zehnder.CloseSession();
 ```
+
+## Energy values
+
+The power and energy values of the Zehnder app ("Unit Status" page) are available as sensors via `RegisterSensor`:
+
+| App                               | Sensor    | Unit |
+|-----------------------------------|-----------|------|
+| Power consumption: current        | 128       | W    |
+| Power consumption: year-to-date   | 129       | kWh  |
+| Power consumption: total          | 130       | kWh  |
+| Pre-heater: current               | 146       | W    |
+| Pre-heater: year-to-date / total  | 144 / 145 | kWh  |
+| Avoided heating: current          | 213       | W    |
+| Avoided heating: year-to-date     | 214       | kWh  |
+| Avoided heating: total            | 215       | kWh  |
+| Avoided cooling: current          | 216       | W    |
+| Avoided cooling: year-to-date     | 217       | kWh  |
+| Avoided cooling: total            | 218       | kWh  |
+
+"Total Energy Savings" is not provided by a sensor (at least none the app registers). The values shown in the app are the sum of avoided heating and avoided cooling:
+
+* year-to-date = 214 + 217
+* total = 215 + 218
+
+This is not documented by Zehnder - it was derived from the app traffic, where the numbers add up exactly (e.g. 236 + 53 = 289 kWh, 8199 + 320 = 8519 kWh).
 
 ## Credits
 
