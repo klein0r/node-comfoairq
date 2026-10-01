@@ -44,7 +44,7 @@ Only these are provided:
 * nodes on the ComfoNet bus (`nodes`, `GetVentilationNode`)
 * alarms (`alarm` event) and error reset (`SendCommand(node, 'ERRORS_RESET')`)
 
-All functions return Promises which resolve with the response of the device (e.g. `ListRegisteredApps` -> `[{ uuid, devicename }]`, `VersionRequest` -> `{ gatewayVersion, serialNumber, comfoNetVersion }`, `TimeRequest` -> `{ timestamp }`, `StartSession` -> `{ resumed }`). Responses are matched to their request, so several requests may be sent at the same time.
+All functions return Promises which resolve with the response of the device (e.g. `ListRegisteredApps` -> `[{ uuid, devicename }]`, `VersionRequest` -> `{ gatewayVersion: 'R1.5.1', serialNumber, comfoNetVersion: 'R1.0.0' }`, `TimeRequest` -> `{ timestamp }`, `StartSession` -> `{ resumed }`). Responses are matched to their request, so several requests may be sent at the same time.
 
 If the request fails, the Promise rejects with a `ComfoAirQError` with a `code`:
 

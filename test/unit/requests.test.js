@@ -244,3 +244,14 @@ test('reconnect re-registers the sensors one after another', async () => {
 
     await shutdown(client, device);
 });
+
+test('VersionRequest decodes the versions', async () => {
+    // values of a ComfoConnect LAN C
+    const device = await sessionDevice((req) => req.reply('VersionConfirm', { gatewayVersion: 3222279169, serialNumber: 'DEM0000000000', comfoNetVersion: 3222274048 }));
+    const client = createClient(device.port);
+    await client.StartSession(true);
+
+    assert.deepEqual(await client.VersionRequest(), { gatewayVersion: 'R1.5.1', serialNumber: 'DEM0000000000', comfoNetVersion: 'R1.0.0' });
+
+    await shutdown(client, device);
+});
