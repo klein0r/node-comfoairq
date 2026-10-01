@@ -31,11 +31,7 @@
         "url": "git+https://github.com/klein0r/node-comfoairq.git"
     },
     "dependencies": {
-        "events": "^3.3.0",
-        "net": "^1.0.2",
-        "pbf": "^4.0.1",
-        "protobufjs": "^8.0.1",
-        "safe-buffer": "^5.2.1"
+        "protobufjs": "^8.0.1"
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",

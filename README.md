@@ -68,11 +68,31 @@ On 'received' and 'disconnect' events are provided
 
 ## Quick-start
 
-```javascript
-const comfoconnect = require('node-comfoairq');
-const settings = require(__dirname + '/settings.json');
+### 1. Discovery
 
-const zehnder = new comfoconnect(settings);
+Find all ComfoConnect LAN C adapters in the local network - no configuration or instance required (e.g. to show a selection in a settings dialog):
+
+```javascript
+const ComfoAirQ = require('comfoairq');
+
+const devices = await ComfoAirQ.discover({ timeout: 3000 });
+// -> [{ comfoair: '192.168.1.50', comfouuid: '00000000003410138001144fd71e24cc', port: 56747, version: 1 }]
+```
+
+Options: `address` (broadcast / IP address or array, default: broadcast address of every IPv4 interface), `port` (default `56747`) and `timeout` in ms (default `3000`). The promise resolves with an empty array if no adapter answers.
+
+### 2. Connect
+
+Create the instance with the selected device. `uuid` identifies this application at the LAN C - generate it once with `ComfoAirQ.generateUuid()` and store it. `pin` is the PIN of the LAN C (default `0`), it is required to register the app the first time.
+
+```javascript
+const zehnder = new ComfoAirQ({
+  comfoair: '192.168.1.50',                      // from discovery
+  comfouuid: '00000000003410138001144fd71e24cc', // from discovery
+  uuid: storedUuid,                              // ComfoAirQ.generateUuid()
+  pin: 0,
+  device: 'my-app'                               // name shown in the list of registered apps
+});
 
 zehnder.on('receive', (data) => {
   console.log(JSON.stringify(data));
@@ -81,18 +101,17 @@ zehnder.on('receive', (data) => {
 zehnder.on('disconnect', (reason) => {
   if (reason.state == 'OTHER_SESSION') {
     console.log('other device became active');
-    reconnect = true;
   }
-  connected = false;
 });
 
-const deviceInfo = await zehnder.discover('192.168.1.255');
-
+await zehnder.RegisterApp();      // first time only
 await zehnder.StartSession(true);
 // ..... do something ......
-// -> find some inspiration in test\comfoTest.js
+// -> find some inspiration in test/comfoTest.js
 await zehnder.CloseSession();
 ```
+
+The constructor throws if `uuid` / `comfouuid` are not 32 hex characters, or if `comfouuid` is set without `uuid`. Empty strings are treated as not set.
 
 ## Installer settings
 

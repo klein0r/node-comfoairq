@@ -5,7 +5,7 @@ const settings = require(__dirname + '/settings.json');
 
 const zehnder = new comfoconnect(settings);
 
-const readline = require('readline');
+const readline = require('node:readline');
 const trmnl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
@@ -81,7 +81,7 @@ const waitForCommand = function() {
         } else if (answer == 'srch') {
             console.log('running discovery\n');
 
-            const result = await zehnder.discover('172.16.255.255');
+            const result = await comfoconnect.discover({ timeout: 3000 });
             console.log(JSON.stringify(result));
         } else if (answer == 'lapp') {
             console.log('list registered apps\n');
