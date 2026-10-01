@@ -191,5 +191,5 @@ git push --follow-tags
 Development of this node.js plugin is heavily inspired on the work performed by:
 
 * Jan Van Belle (https://github.com/herrJones/node-comfoairq)
-* Michael Arnauts (https://github.com/michaelarnauts/comfoconnect)
+* Michael Arnauts (https://github.com/michaelarnauts/aiocomfoconnect)
 * Marco Hoyer (https://github.com/marco-hoyer/zcan) and its forks on github (djwlindenaar, decontamin4t0R)
