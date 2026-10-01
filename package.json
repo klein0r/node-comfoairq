@@ -12,16 +12,14 @@
         "api"
     ],
     "engines": {
-        "node": ">=20"
+        "node": ">=22"
     },
     "author": {
-        "name": "Jan Van Belle"
+        "name": "Matthias Kleine",
+        "email": "info@haus-automatisierung.com"
     },
     "contributors": [
-        {
-            "name": "Matthias Kleine",
-            "email": "info@haus-automatisierung.com"
-        }
+        "Jan Van Belle"
     ],
     "license": "GPL-3.0-or-later",
     "repository": {
@@ -36,7 +34,9 @@
         "safe-buffer": "^5.2.1"
     },
     "devDependencies": {
-        "eslint": "^10.2.1"
+        "@eslint/js": "^10.0.1",
+        "eslint": "^10.2.1",
+        "globals": "^17.13.0"
     },
     "bugs": {
         "url": "https://github.com/klein0r/node-comfoairq/issues"

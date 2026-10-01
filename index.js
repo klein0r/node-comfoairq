@@ -1,1 +1,1 @@
-module.exports = require('./lib/comfoconnect')
+module.exports = require('./lib/comfoconnect');

@@ -22,6 +22,26 @@ A test-application is provided to demonstrate the capabilities
 npm run test
 ```
 
+### Run via Docker
+
+The test script can be executed inside a container using the provided [Dockerfile](Dockerfile):
+
+```sh
+docker build -t comfoairq-test .
+docker run --rm -it --network host comfoairq-test
+```
+
+Notes:
+
+* `-it` is required because the test script is an interactive REPL.
+* `--network host` is recommended so that UDP broadcast discovery (`srch`) and the TCP connection to the ComfoConnect LAN C work on the local network. On Docker Desktop (macOS/Windows) host networking is limited — address the device directly via `test/settings.json` and mount it at runtime:
+
+  ```sh
+  docker run --rm -it -v "$PWD/test/settings.json:/app/test/settings.json:ro" comfoairq-test
+  ```
+
+* Mounting `test/settings.json` lets you change device IP, PIN and UUIDs without rebuilding the image.
+
 ## Range of functions
 
 Not all functions are implemented as the plugin is designed for home automation
@@ -38,8 +58,28 @@ Only these are provided:
 * list all registered apps
 * register app
 * deregister app
+* away mode / boost with custom duration (`SetAway`, `SetBoost`)
+* read schedule entries (`GetScheduleEntry`, `ListScheduleEntries`)
+* read / write properties (`GetProperty`, `SetProperty`) - see `comfoProperties` in [lib/const.js](lib/const.js)
 
-All functions return Promises
+All functions return Promises. `SetAway`, `SetBoost`, `GetScheduleEntry`, `ListScheduleEntries`, `GetProperty` and `SetProperty` resolve with the device response.
+
+```javascript
+await zehnder.SetAway(1, new Date('2026-10-02T11:30:00'));  // away until end time (or seconds, -1 = unlimited)
+await zehnder.SendCommand(1, 'AWAY_END');
+
+await zehnder.SetBoost(1, 45 * 60);                           // boost for 45 minutes
+
+await zehnder.GetProperty(1, 'FILTER_LIFETIME');              // -> 180 (days)
+await zehnder.SetProperty(1, 'FILTER_LIFETIME', 170);
+await zehnder.GetProperty(1, 'MODEL_NAME');                   // -> 'ComfoAir Q350 D TR'
+
+await zehnder.ListScheduleEntries(1, 0x01);                   // -> [{ type: 1, active: true, duration: null, remaining: null, value: 3 }, ...]
+
+await zehnder.SendCommand(1, 'FILTER_CHANGE_START');          // FILTER_CHANGE_COMPLETE resets the filter counter, FILTER_CHANGE_ABORT cancels
+```
+
+Note: `FAN_MODE_AWAY` is manual fan level 0, the away mode of the Zehnder app is `SetAway` / `AWAY_END`.
 
 On 'received' and 'disconnect' events are provided
 
@@ -63,8 +103,7 @@ zehnder.on('disconnect', (reason) => {
   connected = false;
 });
 
-const deviceInfo = await zehnder.discover('172.16.255.255');
-
+const deviceInfo = await zehnder.discover('192.168.1.255');
 
 await zehnder.StartSession(true);
 // ..... do something ......

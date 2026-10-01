@@ -70,6 +70,10 @@ const waitForCommand = function() {
         'conn -- connect to ComfoAir unit\n' +
         'sens -- register to updates on sensors\n' +
         'cmnd -- send command\n' +
+        'prop -- get / set property (prop FILTER_LIFETIME [value])\n' +
+        'away -- activate away mode (away <minutes>, -1 = unlimited)\n' +
+        'bost -- activate boost (bost <minutes>, -1 = unlimited)\n' +
+        'schd -- list fan schedule entries\n' +
         'time -- fetch system time\n' +
         'disc -- disconnect from ComfoAir unit\n' +
         'quit -- close this application\n\n');
@@ -157,6 +161,33 @@ const waitForCommand = function() {
                 console.log(JSON.stringify(result));
             } else {
                 console.log('Provide command name as parameter');
+            }
+        } else if (answer.startsWith('prop')) {
+            const [propName, propValue] = answer.slice(5).split(' ');
+            try {
+                if (propValue === undefined) {
+                    console.log(propName + ' = ' + JSON.stringify(await zehnder.GetProperty(1, propName)));
+                } else {
+                    const value = isNaN(propValue) ? propValue : Number(propValue);
+                    console.log(JSON.stringify(await zehnder.SetProperty(1, propName, value)));
+                }
+            } catch (exc) {
+                console.log(exc);
+            }
+        } else if (answer.startsWith('away') || answer.startsWith('bost')) {
+            const minutes = Number(answer.slice(5));
+            const seconds = minutes < 0 ? -1 : minutes * 60;
+            try {
+                const result = answer.startsWith('away') ? await zehnder.SetAway(1, seconds) : await zehnder.SetBoost(1, seconds);
+                console.log(JSON.stringify(result));
+            } catch (exc) {
+                console.log(exc);
+            }
+        } else if (answer == 'schd') {
+            try {
+                console.log(JSON.stringify(await zehnder.ListScheduleEntries(1, 0x01), null, 2));
+            } catch (exc) {
+                console.log(exc);
             }
         } else if (answer.startsWith('time')) {
             console.log('Fetching time\n');
