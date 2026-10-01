@@ -53,3 +53,27 @@ test('airflow constraints', () => {
 
     assert.equal(notification(230, Buffer.alloc(8)), null);
 });
+
+test('all properties are unique and have a supported kind', () => {
+    const config = require('../../lib/const');
+    const before = require('../../lib/preparation');
+    const names = new Set();
+    const addresses = new Set();
+
+    for (const property of config.comfoProperties) {
+        assert.ok(!names.has(property.name), 'duplicate name ' + property.name);
+        names.add(property.name);
+
+        const address = [property.unit, property.subunit, property.property].join('/');
+        assert.ok(!addresses.has(address), 'duplicate property ' + address + ' (' + property.name + ')');
+        addresses.add(address);
+
+        assert.ok(['uint8', 'uint16', 'decimal16', 'string', 'version'].includes(property.kind), property.name);
+    }
+
+    // multiple properties of one unit / subunit in one request
+    const targets = ['TARGET_TEMP_WARM', 'TARGET_TEMP_NORMAL', 'TARGET_TEMP_COOL'].map((name) => config.comfoProperties.find((entry) => entry.name === name));
+    assert.equal(before.rmi_PropertyGetMultiple(targets).toString('hex'), '0201' + '1d01' + '13' + '0a0b0c');
+    const data = Buffer.from([0xe6, 0x00, 0xd2, 0x00, 0xbe, 0x00]);
+    assert.deepEqual(after.analyze_Properties(targets, data), { TARGET_TEMP_WARM: 23, TARGET_TEMP_NORMAL: 21, TARGET_TEMP_COOL: 19 });
+});
