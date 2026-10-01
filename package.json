@@ -3,6 +3,10 @@
     "version": "0.8.0",
     "description": "Zehnder ComfoAirQ implementation",
     "main": "lib/comfoconnect.js",
+    "files": [
+        "index.js",
+        "lib/"
+    ],
     "keywords": [
         "zehnder",
         "comfoair",
