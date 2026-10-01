@@ -222,6 +222,8 @@ docker run --rm -it -v "$PWD/test/settings.json:/app/test/settings.json:ro" comf
 
 ### Release
 
+`npm version` runs lint and the unit tests first (`preversion`) and aborts if they fail. The release workflow runs them again before publishing.
+
 ```bash
 docker build -t comfoairq-test .
 docker run --rm -it \

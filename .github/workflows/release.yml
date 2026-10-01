@@ -37,8 +37,9 @@ jobs:
 
       - run: npm ci
 
-      # `npm test` needs a real device, so only lint before publishing.
+      # `npm test` needs a real device, the unit tests use a fake ComfoConnect LAN C.
       - run: npm run lint
+      - run: npm run unit
 
       - name: Publish to npm
         run: |

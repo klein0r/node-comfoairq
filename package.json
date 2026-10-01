@@ -49,6 +49,7 @@
     "scripts": {
         "test": "node test/comfoTest.js",
         "unit": "node --test \"test/unit/*.test.js\"",
-        "lint": "eslint"
+        "lint": "eslint",
+        "preversion": "npm run lint && npm run unit"
     }
 }
