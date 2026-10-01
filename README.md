@@ -32,7 +32,7 @@ Only these are provided:
 * keepalive
 * send command
 * close session
-* register sensor
+* register / deregister sensor (`RegisterSensor`, `DeregisterSensor`)
 * get version
 * get time
 * list all registered apps
@@ -41,8 +41,44 @@ Only these are provided:
 * away mode / boost with custom duration (`SetAway`, `SetBoost`)
 * read schedule entries (`GetScheduleEntry`, `ListScheduleEntries`)
 * read / write properties (`GetProperty`, `GetProperties`, `GetPropertyRange`, `SetProperty`) - see `comfoProperties` in [lib/const.js](lib/const.js)
+* nodes on the ComfoNet bus (`nodes`, `GetVentilationNode`)
+* alarms (`alarm` event) and error reset (`SendCommand(node, 'ERRORS_RESET')`)
 
-All functions return Promises. `SetAway`, `SetBoost`, `GetScheduleEntry`, `ListScheduleEntries`, `GetProperty`, `GetProperties`, `GetPropertyRange` and `SetProperty` resolve with the device response.
+All functions return Promises which resolve with the response of the device (e.g. `ListRegisteredApps` -> `[{ uuid, devicename }]`, `VersionRequest` -> `{ gatewayVersion, serialNumber, comfoNetVersion }`, `TimeRequest` -> `{ timestamp }`, `StartSession` -> `{ resumed }`). Responses are matched to their request, so several requests may be sent at the same time.
+
+If the request fails, the Promise rejects with a `ComfoAirQError` with a `code`:
+
+| code | reason |
+|------|--------|
+| `NOT_ALLOWED` | e.g. `StartSession` of an app which is not registered (call `RegisterApp` first) |
+| `OTHER_SESSION` | another client took over the session |
+| `RMI_ERROR` | the unit refused the request, `details.rmiError` is the error code of the unit (e.g. `30` = value not in range) |
+| `BAD_REQUEST`, `INTERNAL_ERROR`, `NOT_REACHABLE`, `NO_RESOURCES`, `NOT_EXIST` | other errors of the device (`NOT_REACHABLE` also if the TCP connection was refused) |
+| `TIMEOUT` | no connection within `connectTimeout` (default 5000 ms) or no response within `requestTimeout` (default 15000 ms) |
+| `NOT_CONNECTED` | the connection was lost before the response arrived |
+
+`KeepAlive` and `CloseSession` have no response, they resolve as soon as the message was sent.
+
+### Node
+
+The first parameter of the RMI functions (`SendCommand`, `SetAway`, `GetProperty`, ...) is the node id. The device announces its nodes after `StartSession` (`zehnder.nodes`). Pass `null` to use the ventilation unit (ComfoAir Q / ComfoAir Flex) - it is node 1 on most setups, but not on all of them (e.g. node 45 for a ComfoAir Flex).
+
+```javascript
+await zehnder.GetProperty(null, 'FIRMWARE_VERSION');          // -> 'R1.4.0'
+await zehnder.GetVentilationNode();                           // -> 1
+```
+
+### Alarms
+
+Active errors of a node are emitted as `alarm` event. The texts depend on the firmware version of the node:
+
+```javascript
+zehnder.on('alarm', (alarm) => {
+  // { nodeId: 1, firmwareVersion: 'R1.12.0', errorId: ..., errors: { 77: 'The filters of the Ventilation Unit must be replaced now' } }
+});
+
+await zehnder.SendCommand(null, 'ERRORS_RESET');
+```
 
 ```javascript
 await zehnder.SetAway(1, new Date('2026-10-02T11:30:00'));  // away until end time (or seconds, -1 = unlimited)
@@ -64,7 +100,7 @@ await zehnder.SendCommand(1, 'FILTER_CHANGE_START');          // FILTER_CHANGE_C
 
 Note: `FAN_MODE_AWAY` is manual fan level 0, the away mode of the Zehnder app is `SetAway` / `AWAY_END`.
 
-On 'received' and 'disconnect' events are provided
+The events `receive` (all messages of the device), `alarm` and `disconnect` are provided
 
 ## Quick-start
 
@@ -113,6 +149,8 @@ await zehnder.CloseSession();
 
 The LAN C sends invalid (zero) values right after a sensor was registered (also after an automatic reconnect). These values are held back for `sensorDelay` ms (default `5000`, `0` disables it): the first non-zero value is emitted immediately, a value which is still zero after the delay is emitted afterwards.
 
+Options `connectTimeout` (default `5000`) and `requestTimeout` (default `15000`) limit the time to wait for the TCP connection / for the response of a request in ms.
+
 The constructor throws if `uuid` / `comfouuid` are not 32 hex characters, or if `comfouuid` is set without `uuid`. Empty strings are treated as not set.
 
 ## Installer settings
@@ -153,6 +191,14 @@ The power and energy values of the Zehnder app ("Unit Status" page) are availabl
 This is not documented by Zehnder - it was derived from the app traffic, where the numbers add up exactly (e.g. 236 + 53 = 289 kWh, 8199 + 320 = 8519 kWh).
 
 ## Dev
+
+### Unit tests
+
+The unit tests in [test/unit](test/unit) use a fake ComfoConnect LAN C, no device is required:
+
+```bash
+npm run unit
+```
 
 ### Run via Docker
 

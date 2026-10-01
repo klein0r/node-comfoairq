@@ -18,6 +18,10 @@ zehnder.on('receive', (data) => {
     console.log(JSON.stringify(data));
 });
 
+zehnder.on('alarm', (alarm) => {
+    console.log('ALARM: ' + JSON.stringify(alarm));
+});
+
 zehnder.on('disconnect', (reason) => {
     if (reason.state == 'OTHER_SESSION') {
         console.log('other device became active');
@@ -45,10 +49,6 @@ async function restartSession() {
     try {
         const result = await zehnder.StartSession(false);
         console.log(JSON.stringify(result));
-
-        if (result && result[0].error != 'OK') {
-            throw new Error(result[0].error);
-        }
         connected = true;
 
         setTimeout(keepAlive, 5000);
@@ -60,152 +60,172 @@ async function restartSession() {
 
 const waitForCommand = function() {
     trmnl.question('zehnder command to test (? for help)  ', async function(answer) {
-        if (answer == '?') {
-            console.log('?    -- this help function\n' +
-        'srch -- run discovery\n' +
-        'lapp -- List Registered Apps\n' +
-        'rapp -- Register App\n' +
-        'uapp -- UnRegister App\n' +
-        'info -- fetch ComfoAir version\n' +
-        'conn -- connect to ComfoAir unit\n' +
-        'sens -- register to updates on sensors\n' +
-        'cmnd -- send command\n' +
-        'prop -- get / set property (prop FILTER_LIFETIME [value])\n' +
-        'away -- activate away mode (away <minutes>, -1 = unlimited)\n' +
-        'bost -- activate boost (bost <minutes>, -1 = unlimited)\n' +
-        'schd -- list fan schedule entries\n' +
-        'time -- fetch system time\n' +
-        'disc -- disconnect from ComfoAir unit\n' +
-        'quit -- close this application\n\n');
+        try {
+            if (answer == '?') {
+                console.log('?    -- this help function\n' +
+            'srch -- run discovery\n' +
+            'lapp -- List Registered Apps\n' +
+            'rapp -- Register App\n' +
+            'uapp -- UnRegister App\n' +
+            'info -- fetch ComfoAir version\n' +
+            'conn -- connect to ComfoAir unit\n' +
+            'sens -- register to updates on sensors\n' +
+            'dsen -- deregister sensor\n' +
+            'nods -- list nodes on the ComfoNet bus\n' +
+            'cmnd -- send command\n' +
+            'prop -- get / set property (prop FILTER_LIFETIME [value])\n' +
+            'away -- activate away mode (away <minutes>, -1 = unlimited)\n' +
+            'bost -- activate boost (bost <minutes>, -1 = unlimited)\n' +
+            'schd -- list fan schedule entries\n' +
+            'time -- fetch system time\n' +
+            'disc -- disconnect from ComfoAir unit\n' +
+            'quit -- close this application\n\n');
 
-        } else if (answer == 'srch') {
-            console.log('running discovery\n');
+            } else if (answer == 'srch') {
+                console.log('running discovery\n');
 
-            const result = await comfoconnect.discover({ timeout: 3000 });
-            console.log(JSON.stringify(result));
-        } else if (answer == 'lapp') {
-            console.log('list registered apps\n');
-
-            const result = await zehnder.ListRegisteredApps();
-            console.log(JSON.stringify(result));
-
-        } else if (answer == 'rapp') {
-            console.log('register this app\n');
-
-            const result = await zehnder.RegisterApp();
-            console.log(JSON.stringify(result));
-
-        } else if (answer.startsWith('uapp')) {
-            console.log('unregister this app\n');
-
-            const uuid = answer.slice(5);
-            const result = await zehnder.DeRegisterApp(uuid);
-            console.log(JSON.stringify(result));
-
-        } else if (answer == 'info') {
-            console.log('fetch ComfoAir info\n');
-
-            const result = await zehnder.VersionRequest();
-            console.log(JSON.stringify(result));
-
-        } else if (answer == 'conn') {
-            console.log('connect to ComfoAir unit\n');
-
-            try {
-                const result = await zehnder.StartSession(true);
+                const result = await comfoconnect.discover({ timeout: 3000 });
                 console.log(JSON.stringify(result));
-                connected = true;
-                /*
-        result = await zehnder.RegisterSensor(67); // TEMPERATURE_PROFILE
-        console.log(JSON.stringify(result));
+            } else if (answer == 'lapp') {
+                console.log('list registered apps\n');
 
-        result = await zehnder.RegisterSensor(122); // SENSOR_FAN_SUPPLY_SPEED
-        console.log(JSON.stringify(result));
-
-        result = await zehnder.RegisterSensor(227); // SENSOR_BYPASS_STATE
-        console.log(JSON.stringify(result));
-
-        result = await zehnder.RegisterSensor(221); // SENSOR_TEMPERATURE_SUPPLY
-        console.log(JSON.stringify(result));
-
-        result = await zehnder.RegisterSensor(274); // SENSOR_TEMPERATURE_EXTRACT
-        console.log(JSON.stringify(result));
-
-        result = await zehnder.RegisterSensor(275); // SENSOR_TEMPERATURE_EXHAUST
-        console.log(JSON.stringify(result));
-
-        result = await zehnder.RegisterSensor(276); // SENSOR_TEMPERATURE_OUTDOOR
-        console.log(JSON.stringify(result));
-*/
-                setTimeout(keepAlive, 5000);
-            } catch (exc) {
-                console.log(exc);
-            }
-
-        } else if (answer.startsWith('sens')) {
-            console.log('register to updates on sensors\n');
-
-            const sensID = answer.slice(5);
-            if (sensID) {
-                const result = await zehnder.RegisterSensor(Number(sensID));
+                const result = await zehnder.ListRegisteredApps();
                 console.log(JSON.stringify(result));
-            } else {
-                console.log('Provide sensor id as parameter');
-            }
-        } else if (answer.startsWith('cmnd')) {
-            console.log('Sending custom command\n');
 
-            const cmndName = answer.slice(5);
-            if (cmndName) {
-                const result = await zehnder.SendCommand(1, cmndName);
+            } else if (answer == 'rapp') {
+                console.log('register this app\n');
+
+                const result = await zehnder.RegisterApp();
                 console.log(JSON.stringify(result));
-            } else {
-                console.log('Provide command name as parameter');
-            }
-        } else if (answer.startsWith('prop')) {
-            const [propName, propValue] = answer.slice(5).split(' ');
-            try {
-                if (propValue === undefined) {
-                    console.log(propName + ' = ' + JSON.stringify(await zehnder.GetProperty(1, propName)));
-                } else {
-                    const value = isNaN(propValue) ? propValue : Number(propValue);
-                    console.log(JSON.stringify(await zehnder.SetProperty(1, propName, value)));
+
+            } else if (answer.startsWith('uapp')) {
+                console.log('unregister this app\n');
+
+                const uuid = answer.slice(5);
+                const result = await zehnder.DeRegisterApp(uuid);
+                console.log(JSON.stringify(result));
+
+            } else if (answer == 'info') {
+                console.log('fetch ComfoAir info\n');
+
+                const result = await zehnder.VersionRequest();
+                console.log(JSON.stringify(result));
+
+            } else if (answer == 'conn') {
+                console.log('connect to ComfoAir unit\n');
+
+                try {
+                    const result = await zehnder.StartSession(true);
+                    console.log(JSON.stringify(result));
+                    connected = true;
+                    /*
+            result = await zehnder.RegisterSensor(67); // TEMPERATURE_PROFILE
+            console.log(JSON.stringify(result));
+
+            result = await zehnder.RegisterSensor(122); // SENSOR_FAN_SUPPLY_SPEED
+            console.log(JSON.stringify(result));
+
+            result = await zehnder.RegisterSensor(227); // SENSOR_BYPASS_STATE
+            console.log(JSON.stringify(result));
+
+            result = await zehnder.RegisterSensor(221); // SENSOR_TEMPERATURE_SUPPLY
+            console.log(JSON.stringify(result));
+
+            result = await zehnder.RegisterSensor(274); // SENSOR_TEMPERATURE_EXTRACT
+            console.log(JSON.stringify(result));
+
+            result = await zehnder.RegisterSensor(275); // SENSOR_TEMPERATURE_EXHAUST
+            console.log(JSON.stringify(result));
+
+            result = await zehnder.RegisterSensor(276); // SENSOR_TEMPERATURE_OUTDOOR
+            console.log(JSON.stringify(result));
+    */
+                    setTimeout(keepAlive, 5000);
+                } catch (exc) {
+                    console.log(exc);
                 }
-            } catch (exc) {
-                console.log(exc);
-            }
-        } else if (answer.startsWith('away') || answer.startsWith('bost')) {
-            const minutes = Number(answer.slice(5));
-            const seconds = minutes < 0 ? -1 : minutes * 60;
-            try {
-                const result = answer.startsWith('away') ? await zehnder.SetAway(1, seconds) : await zehnder.SetBoost(1, seconds);
+
+            } else if (answer.startsWith('sens')) {
+                console.log('register to updates on sensors\n');
+
+                const sensID = answer.slice(5);
+                if (sensID) {
+                    const result = await zehnder.RegisterSensor(Number(sensID));
+                    console.log(JSON.stringify(result));
+                } else {
+                    console.log('Provide sensor id as parameter');
+                }
+            } else if (answer.startsWith('dsen')) {
+                const sensID = answer.slice(5);
+                if (sensID) {
+                    console.log(JSON.stringify(await zehnder.DeregisterSensor(Number(sensID))));
+                } else {
+                    console.log('Provide sensor id as parameter');
+                }
+            } else if (answer == 'nods') {
+                console.log(JSON.stringify(zehnder.nodes, null, 2));
+                try {
+                    console.log('ventilation unit: node ' + await zehnder.GetVentilationNode());
+                } catch (exc) {
+                    console.log(exc);
+                }
+            } else if (answer.startsWith('cmnd')) {
+                console.log('Sending custom command\n');
+
+                const cmndName = answer.slice(5);
+                if (cmndName) {
+                    const result = await zehnder.SendCommand(1, cmndName);
+                    console.log(JSON.stringify(result));
+                } else {
+                    console.log('Provide command name as parameter');
+                }
+            } else if (answer.startsWith('prop')) {
+                const [propName, propValue] = answer.slice(5).split(' ');
+                try {
+                    if (propValue === undefined) {
+                        console.log(propName + ' = ' + JSON.stringify(await zehnder.GetProperty(1, propName)));
+                    } else {
+                        const value = isNaN(propValue) ? propValue : Number(propValue);
+                        console.log(JSON.stringify(await zehnder.SetProperty(1, propName, value)));
+                    }
+                } catch (exc) {
+                    console.log(exc);
+                }
+            } else if (answer.startsWith('away') || answer.startsWith('bost')) {
+                const minutes = Number(answer.slice(5));
+                const seconds = minutes < 0 ? -1 : minutes * 60;
+                try {
+                    const result = answer.startsWith('away') ? await zehnder.SetAway(1, seconds) : await zehnder.SetBoost(1, seconds);
+                    console.log(JSON.stringify(result));
+                } catch (exc) {
+                    console.log(exc);
+                }
+            } else if (answer == 'schd') {
+                try {
+                    console.log(JSON.stringify(await zehnder.ListScheduleEntries(1, 0x01), null, 2));
+                } catch (exc) {
+                    console.log(exc);
+                }
+            } else if (answer.startsWith('time')) {
+                console.log('Fetching time\n');
+
+                const result = await zehnder.TimeRequest();
                 console.log(JSON.stringify(result));
-            } catch (exc) {
-                console.log(exc);
+
+            } else if (answer == 'disc') {
+                console.log('disconnect from ComfoAir unit\n');
+
+                await zehnder.CloseSession();
+                connected = false;
+            } else if (answer == 'quit') {
+                console.log('closing down');
+
+                await zehnder.CloseSession();
+                connected = false;
+                trmnl.close();
             }
-        } else if (answer == 'schd') {
-            try {
-                console.log(JSON.stringify(await zehnder.ListScheduleEntries(1, 0x01), null, 2));
-            } catch (exc) {
-                console.log(exc);
-            }
-        } else if (answer.startsWith('time')) {
-            console.log('Fetching time\n');
-
-            const result = await zehnder.TimeRequest();
-            console.log(JSON.stringify(result));
-
-        } else if (answer == 'disc') {
-            console.log('disconnect from ComfoAir unit\n');
-
-            await zehnder.CloseSession();
-            connected = false;
-        } else if (answer == 'quit') {
-            console.log('closing down');
-
-            await zehnder.CloseSession();
-            connected = false;
-            trmnl.close();
+        } catch (exc) {
+            console.log(exc);
         }
 
         waitForCommand();
