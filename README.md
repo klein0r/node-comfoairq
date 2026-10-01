@@ -22,26 +22,6 @@ A test-application is provided to demonstrate the capabilities
 npm run test
 ```
 
-### Run via Docker
-
-The test script can be executed inside a container using the provided [Dockerfile](Dockerfile):
-
-```sh
-docker build -t comfoairq-test .
-docker run --rm -it --network host comfoairq-test
-```
-
-Notes:
-
-* `-it` is required because the test script is an interactive REPL.
-* `--network host` is recommended so that UDP broadcast discovery (`srch`) and the TCP connection to the ComfoConnect LAN C work on the local network. On Docker Desktop (macOS/Windows) host networking is limited — address the device directly via `test/settings.json` and mount it at runtime:
-
-  ```sh
-  docker run --rm -it -v "$PWD/test/settings.json:/app/test/settings.json:ro" comfoairq-test
-  ```
-
-* Mounting `test/settings.json` lets you change device IP, PIN and UUIDs without rebuilding the image.
-
 ## Range of functions
 
 Not all functions are implemented as the plugin is designed for home automation
@@ -150,6 +130,36 @@ The power and energy values of the Zehnder app ("Unit Status" page) are availabl
 * total = 215 + 218
 
 This is not documented by Zehnder - it was derived from the app traffic, where the numbers add up exactly (e.g. 236 + 53 = 289 kWh, 8199 + 320 = 8519 kWh).
+
+## Dev
+
+### Run via Docker
+
+The test script can be executed inside a container using the provided [Dockerfile](Dockerfile):
+
+```sh
+docker build -t comfoairq-test .
+docker run --rm -it --network host comfoairq-test
+```
+
+Notes:
+
+* `-it` is required because the test script is an interactive REPL.
+* `--network host` is recommended so that UDP broadcast discovery (`srch`) and the TCP connection to the ComfoConnect LAN C work on the local network. On Docker Desktop (macOS/Windows) host networking is limited — address the device directly via `test/settings.json` and mount it at runtime:
+
+  ```sh
+  docker run --rm -it -v "$PWD/test/settings.json:/app/test/settings.json:ro" comfoairq-test
+  ```
+
+* Mounting `test/settings.json` lets you change device IP, PIN and UUIDs without rebuilding the image.
+
+### Release
+
+```
+docker build -t comfoairq-test .
+docker run --rm -it -v "$PWD":/app comfoairq-test npm version minor
+git push --follow-tags
+```
 
 ## Credits
 
