@@ -18,7 +18,7 @@ A test-application is provided to demonstrate the capabilities
 1. Update the test/settings.json
 2. Run the script
 
-```
+```bash
 npm run test
 ```
 
@@ -156,7 +156,7 @@ This is not documented by Zehnder - it was derived from the app traffic, where t
 
 The test script can be executed inside a container using the provided [Dockerfile](Dockerfile):
 
-```sh
+```bash
 docker build -t comfoairq-test .
 docker run --rm -it --network host comfoairq-test
 ```
@@ -166,9 +166,9 @@ Notes:
 * `-it` is required because the test script is an interactive REPL.
 * `--network host` is recommended so that UDP broadcast discovery (`srch`) and the TCP connection to the ComfoConnect LAN C work on the local network. On Docker Desktop (macOS/Windows) host networking is limited — address the device directly via `test/settings.json` and mount it at runtime:
 
-  ```sh
-  docker run --rm -it -v "$PWD/test/settings.json:/app/test/settings.json:ro" comfoairq-test
-  ```
+```bash
+docker run --rm -it -v "$PWD/test/settings.json:/app/test/settings.json:ro" comfoairq-test
+```
 
 * Mounting `test/settings.json` lets you change device IP, PIN and UUIDs without rebuilding the image.
 
