@@ -60,9 +60,9 @@ Only these are provided:
 * deregister app
 * away mode / boost with custom duration (`SetAway`, `SetBoost`)
 * read schedule entries (`GetScheduleEntry`, `ListScheduleEntries`)
-* read / write properties (`GetProperty`, `GetPropertyRange`, `SetProperty`) - see `comfoProperties` in [lib/const.js](lib/const.js)
+* read / write properties (`GetProperty`, `GetProperties`, `GetPropertyRange`, `SetProperty`) - see `comfoProperties` in [lib/const.js](lib/const.js)
 
-All functions return Promises. `SetAway`, `SetBoost`, `GetScheduleEntry`, `ListScheduleEntries`, `GetProperty`, `GetPropertyRange` and `SetProperty` resolve with the device response.
+All functions return Promises. `SetAway`, `SetBoost`, `GetScheduleEntry`, `ListScheduleEntries`, `GetProperty`, `GetProperties`, `GetPropertyRange` and `SetProperty` resolve with the device response.
 
 ```javascript
 await zehnder.SetAway(1, new Date('2026-10-02T11:30:00'));  // away until end time (or seconds, -1 = unlimited)
@@ -72,6 +72,8 @@ await zehnder.SetBoost(1, 45 * 60);                           // boost for 45 mi
 
 await zehnder.GetProperty(1, 'FILTER_LIFETIME');              // -> 180 (days)
 await zehnder.SetProperty(1, 'FILTER_LIFETIME', 170);
+await zehnder.GetProperties(1, ['FAN_FLOW_AWAY', 'FAN_FLOW_LOW', 'FAN_FLOW_MEDIUM', 'FAN_FLOW_HIGH']);
+                                                              // -> { FAN_FLOW_AWAY: 40, FAN_FLOW_LOW: 120, ... } (m³/h)
 await zehnder.GetPropertyRange(1, 'RMOT_COOLING_LIMIT');       // -> { value: 20, min: 15, max: 40, step: 1 }
 await zehnder.GetProperty(1, 'MODEL_NAME');                   // -> 'ComfoAir Q350 D TR'
 
@@ -111,6 +113,18 @@ await zehnder.StartSession(true);
 // -> find some inspiration in test\comfoTest.js
 await zehnder.CloseSession();
 ```
+
+## Installer settings
+
+Some properties are installer settings in the Zehnder app (e.g. `FAN_FLOW_AWAY` / `_LOW` / `_MEDIUM` / `_HIGH`, `ZONES`, `FILTER_WARNING`). The app asks for the installer code before showing them, but the unit does not enforce it:
+
+* `INSTALLER_CODE` can be read without any login (default `4210`) - the app reads it and compares the input locally
+* `INSTALLER_MODE` is the device wide installer mode (`0` = off, `2` = on), the same mode as the login on the unit display. It can be set via `SetProperty` without knowing the code
+* installer settings like `FAN_FLOW_AWAY` can be written while `INSTALLER_MODE` is `0`
+
+So the installer code protects the user interfaces only - everyone who can connect to the ComfoConnect LAN C (PIN) can change installer settings. Use these properties with care, the values are applied to the unit immediately.
+
+Reading a property right after writing it may fail with `RMI_ERROR` while the unit applies the new value - wait a moment or retry.
 
 ## Energy values
 
