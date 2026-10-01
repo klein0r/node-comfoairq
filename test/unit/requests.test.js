@@ -187,8 +187,11 @@ test('DeRegisterApp sends the uuid as bytes', async () => {
     await shutdown(client, device);
 });
 
-test('TimeRequest counts from 2000-01-01', async () => {
-    const device = await sessionDevice((req) => req.reply('CnTimeConfirm', { currentTime: 86400 }));
+test('TimeRequest counts from 2000-01-01 and does not set the time', async () => {
+    const device = await sessionDevice((req) => {
+        assert.equal(Object.prototype.hasOwnProperty.call(req.msg, 'setTime'), false, 'setTime must not be sent');
+        req.reply('CnTimeConfirm', { currentTime: 86400 });
+    });
     const client = createClient(device.port);
     await client.StartSession(true);
 
