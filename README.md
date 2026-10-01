@@ -111,6 +111,8 @@ await zehnder.StartSession(true);
 await zehnder.CloseSession();
 ```
 
+The LAN C sends invalid (zero) values right after a sensor was registered (also after an automatic reconnect). These values are held back for `sensorDelay` ms (default `5000`, `0` disables it): the first non-zero value is emitted immediately, a value which is still zero after the delay is emitted afterwards.
+
 The constructor throws if `uuid` / `comfouuid` are not 32 hex characters, or if `comfouuid` is set without `uuid`. Empty strings are treated as not set.
 
 ## Installer settings
