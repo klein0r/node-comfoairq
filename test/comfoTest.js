@@ -76,6 +76,7 @@ const waitForCommand = function() {
             'prop -- get / set property (prop FILTER_LIFETIME [value])\n' +
             'away -- activate away mode (away <minutes>, -1 = unlimited)\n' +
             'bost -- activate boost (bost <minutes>, -1 = unlimited)\n' +
+            'vent -- set vent mode (vent balance|supply|extract [<minutes>], default unlimited)\n' +
             'schd -- list fan schedule entries\n' +
             'time -- fetch system time\n' +
             'disc -- disconnect from ComfoAir unit\n' +
@@ -197,6 +198,14 @@ const waitForCommand = function() {
                 try {
                     const result = answer.startsWith('away') ? await zehnder.SetAway(1, seconds) : await zehnder.SetBoost(1, seconds);
                     console.log(JSON.stringify(result));
+                } catch (exc) {
+                    console.log(exc);
+                }
+            } else if (answer.startsWith('vent')) {
+                const [, mode, minutes] = answer.split(' ');
+                const seconds = (minutes === undefined || Number(minutes) < 0) ? -1 : Number(minutes) * 60;
+                try {
+                    console.log(JSON.stringify(await zehnder.SetVentMode(1, mode, seconds)));
                 } catch (exc) {
                     console.log(exc);
                 }

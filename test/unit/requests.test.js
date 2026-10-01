@@ -258,3 +258,26 @@ test('VersionRequest decodes the versions', async () => {
 
     await shutdown(client, device);
 });
+
+test('SetVentMode ends the opposite entry and activates the requested one', async () => {
+    const payloads = [];
+    const device = await sessionDevice((req) => {
+        payloads.push(Buffer.from(req.msg.message).toString('hex'));
+        req.reply('CnRmiResponse', {});
+    });
+    const client = createClient(device.port);
+    await client.StartSession(true);
+
+    await client.SetVentMode(1, 'supply', 3600);
+    await client.SetVentMode(1, 'extract');
+    await client.SetVentMode(1, 'balance');
+    assert.deepEqual(payloads, [
+        '85150701', '8415060100000000100e000001',
+        '85150601', '8415070100000000ffffffff01',
+        '85150601', '85150701'
+    ]);
+
+    await assert.rejects(client.SetVentMode(1, 'exhaust'), /unknown vent mode/);
+
+    await shutdown(client, device);
+});

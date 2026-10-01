@@ -38,7 +38,7 @@ Only these are provided:
 * list all registered apps
 * register app
 * deregister app
-* away mode / boost with custom duration (`SetAway`, `SetBoost`)
+* away mode / boost / supply or extract only with custom duration (`SetAway`, `SetBoost`, `SetVentMode`)
 * read schedule entries (`GetScheduleEntry`, `ListScheduleEntries`)
 * read / write properties (`GetProperty`, `GetProperties`, `GetPropertyRange`, `SetProperty`) - see `comfoProperties` in [lib/const.js](lib/const.js)
 * nodes on the ComfoNet bus (`nodes`, `GetVentilationNode`)
@@ -85,6 +85,9 @@ await zehnder.SetAway(1, new Date('2026-10-02T11:30:00'));  // away until end ti
 await zehnder.SendCommand(1, 'AWAY_END');
 
 await zehnder.SetBoost(1, 45 * 60);                           // boost for 45 minutes
+
+await zehnder.SetVentMode(1, 'supply', 2 * 3600);             // supply only for 2 hours ('extract' = extract only, -1 = unlimited)
+await zehnder.SetVentMode(1, 'balance');                      // back to balanced ventilation
 
 await zehnder.GetProperty(1, 'FILTER_LIFETIME');              // -> 180 (days)
 await zehnder.SetProperty(1, 'FILTER_LIFETIME', 170);
